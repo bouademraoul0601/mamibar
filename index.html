@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="MAMI-BAR">
+    <link rel="apple-touch-icon" href="https://i.ibb.co/Lzd988v/mami-bar-icon.png">
+
+    <title>MAMI-BAR Pro</title>
+    
+    <link rel="manifest" href="data:application/json;base64,ewogICJkZWZhdWx0X2xvY2FsZSI6ICJmciIsCiAgIm5hbWUiOiAiTUFNSS1CQVIgUHJvIiwKICAic2hvcnRfbmFtZSI6ICJNQU1JLkJBUiIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMGYxNzJhIiwKICAidGhlbWVfY29sb3IiOiAiIzBmMTcyYSIsCiAgIm9yaWVudGF0aW9uIjogInBvcnRyYWl0Igp9">
+
+    <style>
+        :root {
+            --bg: #0f172a; --card: #1e293b; --accent: #10b981;
+            --text: #f8fafc; --dim: #94a3b8; --danger: #ef4444;
+            --whatsapp: #22c55e; --keep: #3b82f6; --gold: #f59e0b;
+        }
+        * { -webkit-tap-highlight-color: transparent; user-select: none; box-sizing: border-box; }
+        input, textarea, select { user-select: auto; font-family: inherit; }
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background: #0f172a; color: var(--text);
+            margin: 0; padding: 200px 15px 50px 15px;
+            overflow-x: hidden;
+        }
+        .fixed-header {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            background: #0f172a; padding: 15px;
+            box-shadow: 0 4px 25px rgba(0,0,0,0.6);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .logo-area { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 15px; }
+        .logo { width: 35px; height: 35px; border-radius: 8px; border: 1px solid var(--accent); }
+        .logo-area h1 { font-size: 1.3rem; margin: 0; color: var(--accent); letter-spacing: 1.5px; font-weight: 800; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .stat-card { background: var(--card); padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
+        .stat-label { color: var(--dim); font-size: 0.65rem; text-transform: uppercase; font-weight: 600; display: block; margin-bottom: 4px; }
+        .stat-value { font-size: 1rem; font-weight: 700; }
+        .card { background: var(--card); border-radius: 20px; padding: 18px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05); }
+        .card-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 15px; color: var(--accent); display: flex; align-items: center; gap: 8px; }
+        input, select { 
+            background: #0f172a; border: 1px solid #334155; border-radius: 12px; 
+            padding: 14px; color: white; width: 100%; margin-bottom: 12px; font-size: 16px; 
+        }
+        .search-bar { border: 2px solid var(--accent) !important; background: #1e293b !important; }
+        .btn { background: var(--accent); color: white; border: none; padding: 16px; border-radius: 14px; font-weight: 700; width: 100%; cursor: pointer; font-size: 1rem; }
+        .btn:active { opacity: 0.8; transform: scale(0.98); }
+        details { background: rgba(255,255,255,0.03); border-radius: 14px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.08); }
+        summary { padding: 16px; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .item-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .stock-val { font-weight: 800; color: var(--gold); background: #0f172a; padding: 2px 8px; border-radius: 6px; }
+        .archive-box { background: #f8fafc; color: #1e293b; border-radius: 20px; padding: 15px; }
+        .transaction { padding: 12px; border-radius: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; border-bottom: 2px solid rgba(0,0,0,0.05); }
+        .status-badge { border: none; padding: 6px 10px; border-radius: 8px; font-weight: 700; font-size: 0.7rem; color: white; }
+        .btn-ghost { background: none; border: 1px solid #334155; color: var(--dim); padding: 10px; border-radius: 10px; width: 100%; margin-top: 10px; font-size: 0.75rem; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+    <div class="fixed-header">
+        <div class="logo-area">
+            <img src="https://static.vecteezy.com/system/resources/previews/000/061/183/original/bar-logo-vector.jpg" class="logo" alt="Logo">
+            <h1>MAMI-BAR </h1>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-card"><span class="stat-label">Caisse (Cash)</span><div id="ca-val" class="stat-value" style="color:var(--accent)">0 F</div></div>
+            <div class="stat-card"><span class="stat-label">Bénéfice</span><div id="profit-val" class="stat-value" style="color:var(--accent)">0 F</div></div>
+            <div class="stat-card"><span class="stat-label">Dettes</span><div id="debt-val" class="stat-value" style="color:var(--danger)">0 F</div></div>
+            <div class="stat-card"><span class="stat-label">Valeur Stock</span><div id="cap-val" class="stat-value" style="color:var(--gold)">0 F</div></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <details id="details-stock">
+            <summary>📦 Inventaire des Stocks <span>▼</span></summary>
+            <div style="padding: 10px;">
+                <input type="text" id="input-search" class="search-bar" placeholder="🔍 Taper le nom de la boisson..." onkeyup="filtrerStock()">
+                <div id="refill-list"></div>
+            </div>
+        </details>
+    </div>
+
+    <div class="card">
+        <div class="card-title">🛒 Nouvelle Vente</div>
+        <input type="text" id="v-client" placeholder="Nom du Client">
+        <input type="number" id="v-quantite" placeholder="Quantité" value="1">
+        <select id="v-produit"></select>
+        <select id="v-pay">
+            <option value="payé">💰 Payé Cash</option>
+            <option value="emprunt">🚩 Dette Client</option>
+            <option value="gardée">🔵 Bière Gardée</option>
+        </select>
+        <button class="btn" onclick="faireVente()">VALIDER LA VENTE</button>
+    </div>
+
+    <div class="archive-box">
+        <details>
+            <summary style="color:#1e293b">📂 Journal des activités <span>▼</span></summary>
+            <div id="liste-transactions" style="margin-top:10px; max-height: 400px; overflow-y: auto;"></div>
+            <button style="color:var(--danger); background:none; border:none; width:100%; font-size:0.75rem; margin-top:15px; font-weight:bold;" onclick="viderJournal()">EFFACER LE JOURNAL</button>
+        </details>
+        <button onclick="sauvegardeWhatsApp()" style="background:var(--whatsapp); color:white; width:100%; border:none; padding:16px; border-radius:15px; font-weight:bold; margin-top:15px; font-size:0.9rem; display:flex; align-items:center; justify-content:center; gap:10px;">
+            📲 SAUVEGARDE WHATSAPP
+        </button>
+    </div>
+
+    <div class="card" style="margin-top:25px; background: rgba(0,0,0,0.3);">
+        <div class="card-title" style="color:var(--dim)">NOUVEAU PODUIT</div>
+        <input type="text" id="p-nom" placeholder="Nom de la boisson">
+        <div style="display:flex; gap:10px;">
+            <input type="number" id="p-achat" placeholder="Prix Achat">
+            <input type="number" id="p-vente" placeholder="Prix Vente">
+        </div>
+        <button class="btn" style="background:#475569;" onclick="creerProduit()">AJOUTER AU STOCKS</button>
+        <button class="btn-ghost" onclick="restaurerDonnees()">📥 Restaurer une sauvegarde</button>
+        <button class="btn-ghost" style="color:#fb923c; border-color:#7c2d12;" onclick="viderUniquementStock()">📦 Vider les stocks</button>
+        <button class="btn-ghost" style="color:var(--danger); border-color:#450a0a; margin-top:40px;" onclick="reinitialisationTotale()">🔥 RÉINITIALISATION USINE</button>
+    </div>
+
+<script>
+    let produits = JSON.parse(localStorage.getItem('mb_stock')) || [];
+    let archives = JSON.parse(localStorage.getItem('mb_archives')) || [];
+    function sauver() { localStorage.setItem('mb_stock', JSON.stringify(produits)); localStorage.setItem('mb_archives', JSON.stringify(archives)); render(); }
+    function filtrerStock() {
+        const query = document.getElementById('input-search').value.toLowerCase();
+        document.querySelectorAll('.item-row').forEach(row => { row.style.display = row.getAttribute('data-name').toLowerCase().includes(query) ? 'flex' : 'none'; });
+    }
+    function reinitialisationTotale() { if(confirm("⚠ TOUT EFFACER ?")) { localStorage.removeItem('mb_stock'); localStorage.removeItem('mb_archives'); location.reload(); } }
+    function viderUniquementStock() { if(confirm("Mettre les stocks à 0 ?")) { produits.forEach(p => p.stock = 0); sauver(); } }
+    function viderJournal() { if(confirm("Effacer le journal ?")) { archives = archives.filter(a => a.type !== 'VENTE'); sauver(); } }
+    function creerProduit() {
+        const nom = document.getElementById('p-nom').value;
+        const achat = parseFloat(document.getElementById('p-achat').value);
+        const vente = parseFloat(document.getElementById('p-vente').value);
+        if(nom && achat) { produits.push({ id: Date.now(), nom, achat, vente, stock: 0 }); sauver(); document.getElementById('p-nom').value = ""; document.getElementById('p-achat').value = ""; document.getElementById('p-vente').value = ""; }
+    }
+    function ajouterStock(id) {
+        let p = produits.find(x => x.id == id);
+        let q = prompt(`Quantité pour ${p.nom} :`);
+        if(q && !isNaN(q)) { p.stock += parseInt(q); archives.push({ type: 'ACHAT', date: new Date().toLocaleString(), details: `${q}x ${p.nom}`, montant: (q * p.achat), statut: 'investi', id: Date.now() }); sauver(); }
+    }
+    function faireVente() {
+        const pId = document.getElementById('v-produit').value;
+        const qte = parseInt(document.getElementById('v-quantite').value) || 1;
+        const st = document.getElementById('v-pay').value;
+        const cl = document.getElementById('v-client').value || "Comptant";
+        let p = produits.find(x => x.id == pId);
+        if(p && p.stock >= qte) {
+            p.stock -= qte;
+            const dateH = new Date().toLocaleString('fr-FR', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'});
+            archives.push({ type: 'VENTE', date: dateH, details: p.nom, quantite: qte, client: cl, montant: (p.vente * qte), profit: ((p.vente - p.achat) * qte), statut: st, id: Date.now() });
+            sauver(); document.getElementById('v-client').value = ""; document.getElementById('v-quantite').value = "1";
+        } else { alert("Stock insuffisant !"); }
+    }
+    function changerStatut(id, nouveau) { let a = archives.find(x => x.id == id); if(a) { a.statut = nouveau; sauver(); } }
+    function sauvegardeWhatsApp() {
+        let cash = 0, prof = 0, dett = 0, cap = 0, listeG = "";
+        produits.forEach(p => cap += (p.stock * p.achat));
+        archives.forEach(a => {
+            if(a.type === 'VENTE') {
+                if(a.statut === 'payé' || a.statut === 'gardée') { cash += a.montant; prof += a.profit; }
+                if(a.statut === 'emprunt') dett += a.montant;
+                if(a.statut === 'gardée') listeG += `- ${a.client} : ${a.quantite}x ${a.details}\n`;
+            }
+        });
+        const backupCode = btoa(JSON.stringify({s: produits, a: archives}));
+        const texte = `🚀 *MAMI-BAR PRO*\n💰 CAISSE: ${cash}F | PROFIT: ${prof}F\n🍺 *GARDÉES :*\n${listeG || "Néant"}\n🔑 Code: ${backupCode}`;
+        window.open(`https://wa.me/?text=${encodeURIComponent(texte)}`);
+    }
+    function restaurerDonnees() { const code = prompt("Code de restauration :"); if(code) { try { const data = JSON.parse(atob(code)); produits = data.s; archives = data.a; sauver(); } catch(e) { alert("Erreur"); } } }
+    function render() {
+        let cash = 0, prof = 0, dett = 0, cap = 0;
+        document.getElementById('v-produit').innerHTML = '<option value="">-- Sélectionner --</option>' + produits.map(p => `<option value="${p.id}">${p.nom}</option>`).sort().join('');
+        document.getElementById('refill-list').innerHTML = produits.map(p => { cap += (p.stock * p.achat); return `<div class="item-row" data-name="${p.nom}"><span>${p.nom} <span class="stock-val">${p.stock}</span></span><button class="status-badge" style="background:#334155;" onclick="ajouterStock(${p.id})">+ Stock</button></div>`; }).sort().join('');
+        let journalHtml = "";
+        archives.filter(a => a.type === 'VENTE').reverse().forEach(a => {
+            let bg = 'background:#f0fdf4', btnColor = '#10b981', txt = 'PAYÉ';
+            if(a.statut === 'emprunt') { bg = 'background:#fef2f2'; dett += a.montant; btnColor = 'var(--danger)'; txt = 'DETTE'; }
+            else if(a.statut === 'gardée') { bg = 'background:#eff6ff'; cash += a.montant; prof += a.profit; btnColor = 'var(--keep)'; txt = 'GARDÉE'; }
+            else { cash += a.montant; prof += a.profit; }
+            journalHtml += `<div class="transaction" style="${bg}"><div><b>${a.client}</b> <small style="color:#64748b">• ${a.date}</small><br>${a.quantite}x ${a.details}</div><button class="status-badge" style="background:${btnColor}" onclick="changerStatut(${a.id}, 'payé')">${txt}</button></div>`;
+        });
+        document.getElementById('liste-transactions').innerHTML = journalHtml || "Aucune vente";
+        document.getElementById('cap-val').innerText = cap.toLocaleString() + " F";
+        document.getElementById('profit-val').innerText = prof.toLocaleString() + " F";
+        document.getElementById('debt-val').innerText = dett.toLocaleString() + " F";
+        document.getElementById('ca-val').innerText = cash.toLocaleString() + " F";
+    }
+    render();
+</script>
+</body>
+</html>
